@@ -21,29 +21,30 @@ Interpret requests such as:
 
 Resolve the requested period and reporting intent, then follow the AI-first pipeline below.
 
-## Find the bundled DevRecap runner
+## Use the bundled DevRecap runner
 
-Prefer `devrecap` when that command already exists on PATH.
+When this Skill is installed from the DevRecap plugin/marketplace, always use the runner bundled with the same installed plugin version. Do not prefer a `devrecap` executable found on PATH: it may be an older global install, npm link, or source checkout and can render with stale code.
 
-If it is not available, this plugin bundles the DevRecap source and a runner. Determine the plugin root from this skill file: the plugin root is two directories above `skills/devrecap/SKILL.md`.
+Determine the plugin root from this skill file: the plugin root is two directories above `skills/devrecap/SKILL.md`.
 
-Run the bundled CLI with:
+For every factual CLI step in marketplace/plugin usage, run:
 
 `node <plugin-root>/scripts/devrecap-plugin.mjs <args>`
 
 The bundled runner prepares the local workspace links automatically. Node.js 24+ is required.
 
-Inside the DevRecap source repository, `npm.cmd run recap -- <args>` is valid on Windows PowerShell and `npm run recap -- <args>` is valid where `npm` is directly executable.
+Only when developing DevRecap itself from its source repository may the repo-local commands be used explicitly:
+
+- Windows PowerShell: `npm.cmd run recap -- <args>`
+- other shells: `npm run recap -- <args>`
+
+Never mix an installed marketplace Skill with a different `devrecap` binary on PATH during one report run.
 
 ## Consent comes first
 
 Before any local collector is used, DevRecap setup must already exist.
 
-Run the factual preparation step. If it reports that setup is required, stop collection and ask the user to authorize sources by running either:
-
-`devrecap setup`
-
-or, when using the bundled plugin runner:
+Run the factual preparation step with the bundled runner. If it reports that setup is required, stop collection and ask the user to authorize sources by running:
 
 `node <plugin-root>/scripts/devrecap-plugin.mjs setup`
 
@@ -52,7 +53,7 @@ Never bypass setup. Never inspect Codex history, Claude history, or Git reposito
 ## AI-first report pipeline
 
 1. Resolve the requested period faithfully. If the natural-language resolver produces a shorter range than the user asked for, rerun `prepare` with an explicit equivalent period such as `last 14 days` or explicit `--from/--to` dates.
-2. Run `prepare` and write `.devrecap/run.json` in the current project/workspace.
+2. Run the bundled runner's `prepare` command and write `.devrecap/run.json` in the current project/workspace.
 3. Read `.devrecap/run.json`.
 4. Analyze only `contract.facts` and obey `contract.rules`.
 5. Use the host model to synthesize a human-quality report and write one JSON object matching `contract.outputShape` to `.devrecap/analysis.json`.
@@ -60,15 +61,11 @@ Never bypass setup. Never inspect Codex history, Claude history, or Git reposito
 7. Render the validated AI analysis to `reports/derecap-YYYY-MM-DD.html`, where the date is the report range end date. Add a PDF with the same basename only when requested.
 8. Return the generated path plus a concise natural-language recap.
 
-Typical commands:
+Typical marketplace/plugin commands:
 
-`devrecap prepare --request "last 14 days" --out .devrecap/run.json`
+`node <plugin-root>/scripts/devrecap-plugin.mjs prepare --request "last 14 days" --out .devrecap/run.json`
 
-`devrecap render --run .devrecap/run.json --analysis .devrecap/analysis.json --out reports/derecap-2026-09-12.html`
-
-When using the bundled runner, replace `devrecap` with:
-
-`node <plugin-root>/scripts/devrecap-plugin.mjs`
+`node <plugin-root>/scripts/devrecap-plugin.mjs render --run .devrecap/run.json --analysis .devrecap/analysis.json --out reports/derecap-2026-09-12.html`
 
 ## Writing brief for the AI
 
