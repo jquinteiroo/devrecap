@@ -14,7 +14,7 @@ test("portable plugin manifest exposes DevRecap as an AI-native productivity plu
   const manifest = json("plugin.json");
   assert.equal(manifest.$schema, "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json");
   assert.equal(manifest.name, "devrecap");
-  assert.equal(manifest.version, "0.2.1");
+  assert.equal(manifest.version, "0.2.2");
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.displayName, "DevRecap");
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.category, "Productivity");
   assert.match(manifest.extensions?.["com.openai"]?.interface?.shortDescription ?? "", /AI-written work recaps/i);
@@ -40,6 +40,13 @@ test("portable skill keeps host AI synthesis as the preferred report path", () =
   assert.match(skill, /\.devrecap\/analysis\.json/);
   assert.match(skill, /Never promote `in_progress`, `blocked`, or `unknown` work to completed/);
   assert.match(skill, /scripts\/devrecap-plugin\.mjs/);
+});
+
+test("marketplace skill always uses its bundled runner instead of a stale PATH binary", () => {
+  const skill = readFileSync(resolve(root, "skills/devrecap/SKILL.md"), "utf8");
+  assert.match(skill, /always use the runner bundled with the same installed plugin version/i);
+  assert.match(skill, /Do not prefer a `devrecap` executable found on PATH/i);
+  assert.match(skill, /Never mix an installed marketplace Skill with a different `devrecap` binary on PATH/i);
 });
 
 test("marketplace runner boots the CLI on Node 24 without noisy workspace-link output", () => {
