@@ -35,6 +35,6 @@ test("validator drops hallucinated and semantically invalid analysis items", () 
 test("deterministic fallback renders without AI", () => {
   const html = renderHtmlReport(input, buildDeterministicAnalysis(input), { locale: "pt-BR" });
   assert.match(html, /<!doctype html>/);
-  assert.match(html, /DEVRECAP/);
+  assert.match(html, />derecap</);
   assert.doesNotMatch(html, /undefined/);
 });
