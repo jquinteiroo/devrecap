@@ -57,14 +57,14 @@ Never bypass setup. Never inspect Codex history, Claude history, or Git reposito
 4. Analyze only `contract.facts` and obey `contract.rules`.
 5. Use the host model to synthesize a human-quality report and write one JSON object matching `contract.outputShape` to `.devrecap/analysis.json`.
 6. Every analysis item must reference one or more IDs from `contract.allowedActivityIds`.
-7. Run `render` with the AI-generated analysis to create the final HTML, and PDF when requested.
+7. Render the validated AI analysis to `reports/derecap-YYYY-MM-DD.html`, where the date is the report range end date. Add a PDF with the same basename only when requested.
 8. Return the generated path plus a concise natural-language recap.
 
 Typical commands:
 
 `devrecap prepare --request "last 14 days" --out .devrecap/run.json`
 
-`devrecap render --run .devrecap/run.json --analysis .devrecap/analysis.json --out reports/devrecap.html`
+`devrecap render --run .devrecap/run.json --analysis .devrecap/analysis.json --out reports/derecap-2026-09-12.html`
 
 When using the bundled runner, replace `devrecap` with:
 
@@ -78,7 +78,7 @@ The report should feel like a capable teammate reconstructed the work from evide
 
 Use this editorial shape:
 
-- **headline**: a concise description of what characterized the period, not a raw activity count;
+- **headline**: a concise description of what characterized the period, not a raw activity count. Do not prefix the headline with `DevRecap`, `derecap`, or the skill name; the renderer already brands the document once.
 - **executiveSummary**: one polished opening paragraph explaining the period, the main work fronts and the overall completion state;
 - **mainFocus**: a short overview of the most important work front, with context, what was done and its current state;
 - **detail sections**: group related Activities into a small number of meaningful fronts and write natural narratives that explain the work rather than merely naming it;
@@ -94,15 +94,7 @@ For each narrative, prefer 2–4 useful sentences covering as applicable:
 3. why the work mattered or what behavior was being pursued, when supported by evidence;
 4. the evidence-backed state at the end of the period.
 
-Prefer:
-
-- coherent work fronts instead of one card per low-level activity;
-- the user's likely objective when the structured evidence supports it;
-- useful context explaining what was changed, investigated, validated, delivered, or left open;
-- natural language in the user's requested language;
-- concise technical context when it helps memory;
-- a clear distinction between completed, in-progress, blocked, and unconfirmed work;
-- concrete deliveries and outcomes over filenames, command counts, raw parser labels or activity counts.
+Prefer coherent work fronts, useful context, natural language in the user's requested language, concise technical clues that help memory, and concrete outcomes over filenames, command counts, raw parser labels or activity counts.
 
 Do not make the prose sound like a database summary. Avoid phrases such as "the workstream grouped N activities" unless the count itself is genuinely useful. Do not lead with file counts or command counts. Do not repeat raw titles like "Investigated the API" when the structured facts support a clearer explanation.
 
@@ -123,7 +115,7 @@ Do not expose raw transcripts just to improve prose. Do not narrate command-by-c
 
 ## Rendering rule
 
-The host AI's validated wording is the canonical wording for Skill-generated reports. Rendering should preserve the AI-written headline, executive summary, titles and narratives. Deterministic semantic polishing is a fallback for deterministic CLI reports, not a reason to replace a good host-AI synthesis.
+The host AI's validated wording is the canonical wording for Skill-generated reports. Rendering should preserve the AI-written headline, executive summary, titles and narratives. The visual renderer owns branding, color, section numbering and evidence disclosure; the AI should not repeat branding inside prose.
 
 ## Fallback
 
