@@ -20,9 +20,8 @@ Before collecting local history, the user must have completed `devrecap setup`. 
 3. Read `.devrecap/run.json` and follow `contract.rules`.
 4. Analyze only `contract.facts`, `contract.allowedActivityIds`, and the structured accepted data in the prepared run.
 5. Write one JSON object matching `contract.outputShape` to `.devrecap/analysis.json` at presentation quality.
-6. Run `devrecap render --run .devrecap/run.json --analysis .devrecap/analysis.json --out reports/devrecap.html`.
-7. Add `--pdf reports/devrecap.pdf` only if PDF was requested.
-8. Return the generated path and a short conversational recap.
+6. Render to `reports/derecap-YYYY-MM-DD.html`, using the report range end date in the filename. Add a PDF with the same basename only if requested.
+7. Return the generated path and a short conversational recap.
 
 Inside the Skill, do not use `devrecap remember`, `devrecap week`, `devrecap daily`, or similar convenience commands as the final result. Those commands intentionally produce the deterministic fallback writer. Use `prepare → Claude synthesis → render` instead.
 
@@ -32,7 +31,7 @@ Write like a strong technical teammate who reviewed the developer's work history
 
 Use this editorial shape:
 
-- **headline**: describe what characterized the period instead of a raw activity count;
+- **headline**: describe what characterized the period instead of a raw activity count. Do not prefix it with `DevRecap`, `derecap`, or the skill name; the renderer already shows the brand once.
 - **executiveSummary**: one polished opening paragraph covering the main fronts and overall completion state;
 - **mainFocus**: explain the most important front with context, what happened and where it ended;
 - **detail sections**: consolidate related Activities into a small number of meaningful work narratives;
@@ -73,21 +72,10 @@ Use the richest synthesis. Reconstruct each major workstream with context, what 
 
 ## Quality gate
 
-Before rendering, verify that:
-
-- the result reads like a work recap, not telemetry;
-- related Activities are sensibly consolidated;
-- titles are natural and as specific as the evidence permits;
-- every claim is grounded in structured facts;
-- incomplete work is described honestly;
-- there are no invented next steps;
-- every analysis item references valid `activityIds`;
-- the final HTML should be presentable without manually rewriting it after render.
-
-When evidence is ambiguous, prefer a conservative but readable description over a specific invention.
+Before rendering, verify that the result reads like a work recap, related Activities are sensibly consolidated, titles are natural, every claim is grounded in structured facts, incomplete work is described honestly, there are no invented next steps, and each analysis item references valid `activityIds`.
 
 ## Rendering rule
 
-Preserve the validated AI-written headline, executive summary, titles and narratives through the final render. Deterministic semantic polishing is for fallback reports, not for replacing a good Claude synthesis.
+Preserve the validated AI-written headline, executive summary, titles and narratives through the final render. The renderer handles the single derecap brand mark, color, section numbering and collapsed evidence references. Deterministic semantic polishing is only for fallback reports.
 
 DevRecap is explicit-invocation only. Do not create background monitoring, run project code, expose raw transcripts or bypass the CLI's read-only source rules.
