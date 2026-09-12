@@ -14,7 +14,7 @@ test("portable plugin manifest exposes DevRecap as an AI-native productivity plu
   const manifest = json("plugin.json");
   assert.equal(manifest.$schema, "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json");
   assert.equal(manifest.name, "devrecap");
-  assert.equal(manifest.version, "0.2.0");
+  assert.equal(manifest.version, "0.2.1");
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.displayName, "DevRecap");
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.category, "Productivity");
   assert.match(manifest.extensions?.["com.openai"]?.interface?.shortDescription ?? "", /AI-written work recaps/i);
