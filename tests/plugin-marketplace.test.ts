@@ -14,10 +14,21 @@ test("portable plugin manifest exposes DevRecap as an AI-native productivity plu
   const manifest = json("plugin.json");
   assert.equal(manifest.$schema, "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json");
   assert.equal(manifest.name, "devrecap");
-  assert.equal(manifest.version, "0.2.2");
+  assert.match(manifest.version, /^0\.2\.2\+codex\.local-\d{8}-\d{6}$/);
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.displayName, "DevRecap");
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.category, "Productivity");
   assert.match(manifest.extensions?.["com.openai"]?.interface?.shortDescription ?? "", /AI-written work recaps/i);
+});
+
+test("release manifests stay on the same base product version", () => {
+  const manifest = json("plugin.json");
+  const rootPackage = json("package.json");
+  const cliPackage = json("apps/cli/package.json");
+  const pluginBaseVersion = String(manifest.version).split("+")[0];
+
+  assert.equal(pluginBaseVersion, "0.2.2");
+  assert.equal(rootPackage.version, pluginBaseVersion);
+  assert.equal(cliPackage.version, pluginBaseVersion);
 });
 
 test("repo marketplace points at the portable plugin root with install metadata", () => {
