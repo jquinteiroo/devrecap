@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 
@@ -47,6 +47,11 @@ test("marketplace skill always uses its bundled runner instead of a stale PATH b
   assert.match(skill, /always use the runner bundled with the same installed plugin version/i);
   assert.match(skill, /Do not prefer a `devrecap` executable found on PATH/i);
   assert.match(skill, /Never mix an installed marketplace Skill with a different `devrecap` binary on PATH/i);
+});
+
+test("repository does not ship a second Codex skill that can shadow the marketplace plugin", () => {
+  assert.equal(existsSync(resolve(root, ".agents", "skills", "devrecap", "SKILL.md")), false);
+  assert.equal(existsSync(resolve(root, "skills", "devrecap", "SKILL.md")), true);
 });
 
 test("marketplace runner boots the CLI on Node 24 without noisy workspace-link output", () => {
