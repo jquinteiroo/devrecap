@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "devrecap",
-  "version": "0.2.2+codex.local-20260913-085800",
+  "version": "0.2.3",
   "description": "Reconstruct evidence-backed developer work from authorized local coding history and let Codex turn it into polished recaps.",
   "author": {
     "name": "João Quinteiro",

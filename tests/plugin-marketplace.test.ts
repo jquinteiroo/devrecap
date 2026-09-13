@@ -14,21 +14,20 @@ test("portable plugin manifest exposes DevRecap as an AI-native productivity plu
   const manifest = json("plugin.json");
   assert.equal(manifest.$schema, "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json");
   assert.equal(manifest.name, "devrecap");
-  assert.match(manifest.version, /^0\.2\.2\+codex\.local-\d{8}-\d{6}$/);
+  assert.equal(manifest.version, "0.2.3");
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.displayName, "DevRecap");
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.category, "Productivity");
   assert.match(manifest.extensions?.["com.openai"]?.interface?.shortDescription ?? "", /AI-written work recaps/i);
 });
 
-test("release manifests stay on the same base product version", () => {
+test("release manifests stay on the same product version", () => {
   const manifest = json("plugin.json");
   const rootPackage = json("package.json");
   const cliPackage = json("apps/cli/package.json");
-  const pluginBaseVersion = String(manifest.version).split("+")[0];
 
-  assert.equal(pluginBaseVersion, "0.2.2");
-  assert.equal(rootPackage.version, pluginBaseVersion);
-  assert.equal(cliPackage.version, pluginBaseVersion);
+  assert.equal(manifest.version, "0.2.3");
+  assert.equal(rootPackage.version, manifest.version);
+  assert.equal(cliPackage.version, manifest.version);
 });
 
 test("repo marketplace points at the portable plugin root with install metadata", () => {
@@ -60,9 +59,31 @@ test("marketplace skill always uses its bundled runner instead of a stale PATH b
   assert.match(skill, /Never mix an installed marketplace Skill with a different `devrecap` binary on PATH/i);
 });
 
+test("marketplace skill requires editorial renderer preflight and dated derecap output", () => {
+  const skill = readFileSync(resolve(root, "skills/devrecap/SKILL.md"), "utf8");
+  assert.match(skill, /--plugin-info/);
+  assert.match(skill, /renderer` as `editorial-v2/);
+  assert.match(skill, /reports\/derecap-YYYY-MM-DD\.html/);
+  assert.match(skill, /Always pass this exact `--out` path explicitly/);
+});
+
 test("repository does not ship a second Codex skill that can shadow the marketplace plugin", () => {
   assert.equal(existsSync(resolve(root, ".agents", "skills", "devrecap", "SKILL.md")), false);
   assert.equal(existsSync(resolve(root, "skills", "devrecap", "SKILL.md")), true);
+});
+
+test("marketplace runner reports its exact plugin version and renderer before use", () => {
+  const result = spawnSync(process.execPath, [resolve(root, "scripts/devrecap-plugin.mjs"), "--plugin-info"], {
+    cwd: root,
+    encoding: "utf8",
+    env: { ...process.env },
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const info = JSON.parse(result.stdout.trim());
+  assert.equal(info.pluginVersion, "0.2.3");
+  assert.equal(info.renderer, "editorial-v2");
+  assert.equal(resolve(info.pluginRoot), root);
 });
 
 test("marketplace runner boots the CLI on Node 24 without noisy workspace-link output", () => {

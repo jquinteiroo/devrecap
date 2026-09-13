@@ -15,6 +15,7 @@ import {
   readdirSync,
   statSync,
   readFileSync,
+  realpathSync,
 } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -50,9 +51,25 @@ for (const d of dirs) {
   // name like "@devrecap/shared" → link node_modules/@devrecap/shared
   const link = join(nm, name);
   mkdirSync(dirname(link), { recursive: true });
-  if (existsSync(link)) rmSync(link, { recursive: true, force: true });
-  // `target` is absolute (derived from resolve()), which junctions require.
-  symlinkSync(target, link, LINK_TYPE);
+
+  let current = false;
+  if (existsSync(link)) {
+    try {
+      current = resolve(realpathSync(link)) === resolve(realpathSync(target));
+    } catch {
+      current = false;
+    }
+  }
+
+  // Keep an already-correct link in place. This matters when multiple Node test
+  // workers or plugin invocations overlap on Windows: deleting and recreating a
+  // valid junction can briefly break package resolution in another process.
+  if (!current) {
+    if (existsSync(link)) rmSync(link, { recursive: true, force: true });
+    // `target` is absolute (derived from resolve()), which junctions require.
+    symlinkSync(target, link, LINK_TYPE);
+  }
+
   // Verify the link actually resolves. On Windows a privilege/EPERM failure or
   // a broken junction would otherwise pass silently and break `npm test`; fail
   // loudly here so CI catches the regression.
