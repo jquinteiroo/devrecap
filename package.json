@@ -1,6 +1,6 @@
 {
   "name": "devrecap",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "private": true,
   "description": "Local-first, evidence-based developer activity intelligence: turns AI coding sessions + Git into presentation-ready work recaps.",
   "type": "module",
