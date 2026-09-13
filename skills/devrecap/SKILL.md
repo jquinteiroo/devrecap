@@ -33,6 +33,12 @@ For every factual CLI step in marketplace/plugin usage, run:
 
 The bundled runner prepares the local workspace links automatically. Node.js 24+ is required.
 
+Before `prepare`, always run this preflight:
+
+`node <plugin-root>/scripts/devrecap-plugin.mjs --plugin-info`
+
+The returned JSON must report `renderer` as `editorial-v2`. If it reports `legacy-or-unknown`, stop and tell the user the installed plugin is stale or inconsistent. Do not silently continue with a legacy renderer. Use the reported `pluginRoot` when diagnosing installation problems.
+
 Only when developing DevRecap itself from its source repository may the repo-local commands be used explicitly:
 
 - Windows PowerShell: `npm.cmd run recap -- <args>`
@@ -52,20 +58,23 @@ Never bypass setup. Never inspect Codex history, Claude history, or Git reposito
 
 ## AI-first report pipeline
 
-1. Resolve the requested period faithfully. If the natural-language resolver produces a shorter range than the user asked for, rerun `prepare` with an explicit equivalent period such as `last 14 days` or explicit `--from/--to` dates.
-2. Run the bundled runner's `prepare` command and write `.devrecap/run.json` in the current project/workspace.
-3. Read `.devrecap/run.json`.
-4. Analyze only `contract.facts` and obey `contract.rules`.
-5. Use the host model to synthesize a human-quality report and write one JSON object matching `contract.outputShape` to `.devrecap/analysis.json`.
-6. Every analysis item must reference one or more IDs from `contract.allowedActivityIds`.
-7. Render the validated AI analysis to `reports/derecap-YYYY-MM-DD.html`, where the date is the report range end date. Add a PDF with the same basename only when requested.
-8. Return the generated path plus a concise natural-language recap.
+1. Run the `--plugin-info` preflight and require `renderer: editorial-v2` before collecting or rendering anything.
+2. Resolve the requested period faithfully. If the natural-language resolver produces a shorter range than the user asked for, rerun `prepare` with an explicit equivalent period such as `last 14 days` or explicit `--from/--to` dates.
+3. Run the bundled runner's `prepare` command and write `.devrecap/run.json` in the current project/workspace.
+4. Read `.devrecap/run.json`.
+5. Analyze only `contract.facts` and obey `contract.rules`.
+6. Use the host model to synthesize a human-quality report and write one JSON object matching `contract.outputShape` to `.devrecap/analysis.json`.
+7. Every analysis item must reference one or more IDs from `contract.allowedActivityIds`.
+8. Render the validated AI analysis to `reports/derecap-YYYY-MM-DD.html`, where the date is the report range end date. Always pass this exact `--out` path explicitly; do not rely on a CLI default filename. Add a PDF with the same basename only when requested.
+9. Return the generated path plus a concise natural-language recap.
 
 Typical marketplace/plugin commands:
 
+`node <plugin-root>/scripts/devrecap-plugin.mjs --plugin-info`
+
 `node <plugin-root>/scripts/devrecap-plugin.mjs prepare --request "last 14 days" --out .devrecap/run.json`
 
-`node <plugin-root>/scripts/devrecap-plugin.mjs render --run .devrecap/run.json --analysis .devrecap/analysis.json --out reports/derecap-2026-09-12.html`
+`node <plugin-root>/scripts/devrecap-plugin.mjs render --run .devrecap/run.json --analysis .devrecap/analysis.json --out reports/derecap-2026-09-13.html`
 
 ## Writing brief for the AI
 
@@ -113,6 +122,8 @@ Do not expose raw transcripts just to improve prose. Do not narrate command-by-c
 ## Rendering rule
 
 The host AI's validated wording is the canonical wording for Skill-generated reports. Rendering should preserve the AI-written headline, executive summary, titles and narratives. The visual renderer owns branding, color, section numbering and evidence disclosure; the AI should not repeat branding inside prose.
+
+A successful Skill-generated report must use the `editorial-v2` renderer verified by preflight. If preflight and final HTML disagree, treat that as an installation/runtime error instead of returning the legacy report as success.
 
 ## Fallback
 
