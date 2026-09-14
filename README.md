@@ -22,7 +22,7 @@
 
 <p align="center">
   <strong>Now available in the OpenAI Plugins Directory.</strong><br>
-  Open <code>/plugins</code> in Codex, search for <strong>DevRecap</strong>, install it, then run <code>$devrecap</code>.
+  Install with <code>codex plugin add devrecap@openai-curated</code>, then run <code>$devrecap</code>.
 </p>
 
 ---
@@ -39,27 +39,48 @@ It reads only the local coding history and Git evidence you explicitly authorize
 
 **Not a timesheet. Not background monitoring. A recap you explicitly ask for when you need it.**
 
-## Install from the OpenAI Plugins Directory
+## Install
 
 DevRecap 0.3.0 is publicly available through the OpenAI Plugins Directory.
 
-In Codex:
+### Codex CLI — recommended
+
+Install the approved public release directly from the OpenAI curated marketplace:
+
+```bash
+codex plugin add devrecap@openai-curated
+```
+
+Start or restart Codex, then invoke the Skill:
+
+```text
+$devrecap
+```
+
+### Codex UI
+
+You can also install it interactively:
 
 ```text
 /plugins
 ```
 
-Search for:
-
-```text
-DevRecap
-```
-
-Install it and invoke the Skill:
+Search for **DevRecap**, install it, start a new thread, then run:
 
 ```text
 $devrecap
 ```
+
+### Directly from GitHub
+
+If you want the latest version from this repository instead of the curated marketplace snapshot:
+
+```bash
+codex plugin marketplace add jquinteiroo/devrecap --ref main
+codex plugin add devrecap@devrecap-marketplace
+```
+
+For most users, `devrecap@openai-curated` is the recommended install because it uses the reviewed public release.
 
 Then ask naturally:
 
