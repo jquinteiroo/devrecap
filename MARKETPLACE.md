@@ -1,6 +1,6 @@
 # DevRecap — Codex Marketplace Guide
 
-DevRecap now ships as a portable Agent Plugin plus a repository marketplace for Codex/ChatGPT plugin testing and private distribution.
+DevRecap ships as a portable Agent Plugin containing the `devrecap` Skill, plus a repository marketplace for Codex/ChatGPT plugin testing and private distribution.
 
 ## What the marketplace package contains
 
@@ -8,6 +8,8 @@ DevRecap now ships as a portable Agent Plugin plus a repository marketplace for 
 - `skills/devrecap/SKILL.md` — AI-first DevRecap skill used by the installed plugin.
 - `.agents/plugins/marketplace.json` — repository marketplace catalog.
 - `scripts/devrecap-plugin.mjs` — bundled runner that boots the factual CLI without a global npm install.
+- `PRIVACY.md`, `TERMS.md`, and `SUPPORT.md` — public policy/support pages for the directory listing.
+- `OPENAI_SUBMISSION.md` — public-directory listing copy, prompts, test cases, release notes, and submission checklist.
 
 The plugin source is the repository root, so the installed package also contains the DevRecap collectors, activity engine, report engine, and CLI needed by the skill.
 
@@ -42,7 +44,7 @@ Me ajuda a lembrar tudo que trabalhei nas últimas duas semanas.
 Quero um relatório detalhado em português.
 ```
 
-On first use, DevRecap will require explicit authorization for local sources. The skill must not bypass this setup.
+On first use, DevRecap requires explicit authorization for local sources. The skill must not bypass this setup.
 
 The bundled plugin runner is:
 
@@ -50,7 +52,7 @@ The bundled plugin runner is:
 node <plugin-root>/scripts/devrecap-plugin.mjs setup
 ```
 
-The skill derives `<plugin-root>` from its installed location automatically when the `devrecap` command is not already on PATH.
+The Skill always uses the runner bundled with the same plugin installation, preventing stale global/local binaries from changing report behavior.
 
 ## Why the Skill uses AI
 
@@ -69,22 +71,26 @@ Codex / Claude synthesis
   ↓
 validated analysis.json
   ↓
-HTML / PDF
+editorial HTML / optional PDF
 ```
 
-This keeps completion and evidence deterministic while letting the installed AI produce a much more natural and useful report.
+This keeps completion and evidence deterministic while letting the installed AI produce a natural, useful report.
 
-## Public directory status
+## Public directory
 
-This repository marketplace is suitable for local testing, GitHub-based marketplace import, and workspace/private distribution.
+DevRecap 0.3.0 is the first public-directory release candidate.
 
-It is **not automatically listed in the universal public Plugins Directory**. Public listing requires a separate OpenAI plugin submission and review after the package and user experience are validated.
+The GitHub marketplace remains useful for development and private testing, but it does not make the plugin discoverable in the universal Plugins Directory by itself. Public discovery requires a **Skills only** submission through the OpenAI plugin submission portal, OpenAI review, approval, and a final publish action by the developer.
+
+The materials required for that submission are maintained in `OPENAI_SUBMISSION.md`. The repository includes public website/support/privacy/terms URLs and production logo assets for the listing.
+
+After OpenAI approves and the developer publishes the submission, DevRecap can appear in the universal Plugins Directory shared by ChatGPT and Codex.
 
 ## Requirements
 
 - Node.js 24 or newer
 - Git
-- Codex/ChatGPT client with plugin marketplace support
+- Codex/ChatGPT client with a local environment capable of running the bundled Skill runner
 - Optional Chrome/Chromium for direct PDF rendering
 
 See `PRIVACY.md` for the local-source and AI-processing privacy model.
