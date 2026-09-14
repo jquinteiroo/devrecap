@@ -27,12 +27,15 @@
         "category": "Productivity",
         "websiteURL": "https://github.com/jquinteiroo/devrecap",
         "privacyPolicyURL": "https://github.com/jquinteiroo/devrecap/blob/main/PRIVACY.md",
+        "termsOfServiceURL": "https://github.com/jquinteiroo/devrecap/blob/main/TERMS.md",
         "defaultPrompt": [
           "Help me remember what I worked on this week and generate a detailed recap.",
           "Prepare my daily standup from yesterday's coding work.",
           "Create a detailed review of the last 14 days in Portuguese, grouped by workstream."
         ],
-        "brandColor": "#19372f"
+        "brandColor": "#19372f",
+        "composerIcon": "./assets/devrecap-icon.png",
+        "logo": "./assets/devrecap-logo.png"
       }
     }
   }
