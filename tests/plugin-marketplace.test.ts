@@ -94,14 +94,17 @@ test("marketplace runner reports its exact plugin version and renderer before us
   assert.equal(resolve(info.pluginRoot), root);
 });
 
-test("public submission materials exist", () => {
+test("public support and listing materials stay production-focused", () => {
   assert.equal(existsSync(resolve(root, "PRIVACY.md")), true);
   assert.equal(existsSync(resolve(root, "TERMS.md")), true);
   assert.equal(existsSync(resolve(root, "SUPPORT.md")), true);
-  assert.equal(existsSync(resolve(root, "OPENAI_SUBMISSION.md")), true);
   assert.equal(existsSync(resolve(root, "assets", "devrecap-logo.webp")), true);
   assert.equal(existsSync(resolve(root, "assets", "devrecap-icon.webp")), true);
   assert.equal(existsSync(resolve(root, "assets", "devrecap-logo-symbol.webp")), true);
+
+  assert.equal(existsSync(resolve(root, "OPENAI_SUBMISSION.md")), false);
+  assert.equal(existsSync(resolve(root, "MARKETPLACE.md")), false);
+  assert.equal(existsSync(resolve(root, ".kiro")), false);
 });
 
 test("marketplace runner boots the CLI on Node 24 without noisy workspace-link output", () => {
