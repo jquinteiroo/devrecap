@@ -14,10 +14,11 @@ test("portable plugin manifest exposes DevRecap as an AI-native productivity plu
   const manifest = json("plugin.json");
   assert.equal(manifest.$schema, "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json");
   assert.equal(manifest.name, "devrecap");
-  assert.equal(manifest.version, "0.2.3");
+  assert.equal(manifest.version, "0.3.0");
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.displayName, "DevRecap");
   assert.equal(manifest.extensions?.["com.openai"]?.interface?.category, "Productivity");
-  assert.match(manifest.extensions?.["com.openai"]?.interface?.shortDescription ?? "", /AI-written work recaps/i);
+  assert.match(manifest.extensions?.["com.openai"]?.interface?.shortDescription ?? "", /evidence-backed work recaps/i);
+  assert.equal(manifest.extensions?.["com.openai"]?.interface?.brandColor, "#19372f");
 });
 
 test("release manifests stay on the same product version", () => {
@@ -25,7 +26,7 @@ test("release manifests stay on the same product version", () => {
   const rootPackage = json("package.json");
   const cliPackage = json("apps/cli/package.json");
 
-  assert.equal(manifest.version, "0.2.3");
+  assert.equal(manifest.version, "0.3.0");
   assert.equal(rootPackage.version, manifest.version);
   assert.equal(cliPackage.version, manifest.version);
 });
@@ -81,9 +82,17 @@ test("marketplace runner reports its exact plugin version and renderer before us
 
   assert.equal(result.status, 0, result.stderr);
   const info = JSON.parse(result.stdout.trim());
-  assert.equal(info.pluginVersion, "0.2.3");
+  assert.equal(info.pluginVersion, "0.3.0");
   assert.equal(info.renderer, "editorial-v2");
   assert.equal(resolve(info.pluginRoot), root);
+});
+
+test("public submission materials exist", () => {
+  assert.equal(existsSync(resolve(root, "PRIVACY.md")), true);
+  assert.equal(existsSync(resolve(root, "TERMS.md")), true);
+  assert.equal(existsSync(resolve(root, "SUPPORT.md")), true);
+  assert.equal(existsSync(resolve(root, "OPENAI_SUBMISSION.md")), true);
+  assert.equal(existsSync(resolve(root, "assets", "devrecap-logo.webp")), true);
 });
 
 test("marketplace runner boots the CLI on Node 24 without noisy workspace-link output", () => {
