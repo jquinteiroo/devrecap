@@ -34,8 +34,8 @@
           "Create a detailed review of the last 14 days in Portuguese, grouped by workstream."
         ],
         "brandColor": "#19372f",
-        "composerIcon": "./assets/devrecap-icon.png",
-        "logo": "./assets/devrecap-logo.png"
+        "composerIcon": "./assets/devrecap-icon.webp",
+        "logo": "./assets/devrecap-logo-symbol.webp"
       }
     }
   }

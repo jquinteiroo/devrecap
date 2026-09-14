@@ -21,8 +21,8 @@ test("portable plugin manifest exposes DevRecap as an AI-native productivity plu
   assert.equal(interfaceConfig?.category, "Productivity");
   assert.match(interfaceConfig?.shortDescription ?? "", /evidence-backed work recaps/i);
   assert.equal(interfaceConfig?.brandColor, "#19372f");
-  assert.equal(interfaceConfig?.composerIcon, "./assets/devrecap-icon.png");
-  assert.equal(interfaceConfig?.logo, "./assets/devrecap-logo.png");
+  assert.equal(interfaceConfig?.composerIcon, "./assets/devrecap-icon.webp");
+  assert.equal(interfaceConfig?.logo, "./assets/devrecap-logo-symbol.webp");
   assert.equal(interfaceConfig?.termsOfServiceURL, "https://github.com/jquinteiroo/devrecap/blob/main/TERMS.md");
   assert.equal(existsSync(resolve(root, interfaceConfig.composerIcon)), true);
   assert.equal(existsSync(resolve(root, interfaceConfig.logo)), true);
@@ -100,8 +100,8 @@ test("public submission materials exist", () => {
   assert.equal(existsSync(resolve(root, "SUPPORT.md")), true);
   assert.equal(existsSync(resolve(root, "OPENAI_SUBMISSION.md")), true);
   assert.equal(existsSync(resolve(root, "assets", "devrecap-logo.webp")), true);
-  assert.equal(existsSync(resolve(root, "assets", "devrecap-icon.png")), true);
-  assert.equal(existsSync(resolve(root, "assets", "devrecap-logo.png")), true);
+  assert.equal(existsSync(resolve(root, "assets", "devrecap-icon.webp")), true);
+  assert.equal(existsSync(resolve(root, "assets", "devrecap-logo-symbol.webp")), true);
 });
 
 test("marketplace runner boots the CLI on Node 24 without noisy workspace-link output", () => {
