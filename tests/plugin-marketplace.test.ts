@@ -12,13 +12,20 @@ function json(path: string): any {
 
 test("portable plugin manifest exposes DevRecap as an AI-native productivity plugin", () => {
   const manifest = json("plugin.json");
+  const interfaceConfig = manifest.extensions?.["com.openai"]?.interface;
+
   assert.equal(manifest.$schema, "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json");
   assert.equal(manifest.name, "devrecap");
   assert.equal(manifest.version, "0.3.0");
-  assert.equal(manifest.extensions?.["com.openai"]?.interface?.displayName, "DevRecap");
-  assert.equal(manifest.extensions?.["com.openai"]?.interface?.category, "Productivity");
-  assert.match(manifest.extensions?.["com.openai"]?.interface?.shortDescription ?? "", /evidence-backed work recaps/i);
-  assert.equal(manifest.extensions?.["com.openai"]?.interface?.brandColor, "#19372f");
+  assert.equal(interfaceConfig?.displayName, "DevRecap");
+  assert.equal(interfaceConfig?.category, "Productivity");
+  assert.match(interfaceConfig?.shortDescription ?? "", /evidence-backed work recaps/i);
+  assert.equal(interfaceConfig?.brandColor, "#19372f");
+  assert.equal(interfaceConfig?.composerIcon, "./assets/devrecap-icon.png");
+  assert.equal(interfaceConfig?.logo, "./assets/devrecap-logo.png");
+  assert.equal(interfaceConfig?.termsOfServiceURL, "https://github.com/jquinteiroo/devrecap/blob/main/TERMS.md");
+  assert.equal(existsSync(resolve(root, interfaceConfig.composerIcon)), true);
+  assert.equal(existsSync(resolve(root, interfaceConfig.logo)), true);
 });
 
 test("release manifests stay on the same product version", () => {
@@ -93,6 +100,8 @@ test("public submission materials exist", () => {
   assert.equal(existsSync(resolve(root, "SUPPORT.md")), true);
   assert.equal(existsSync(resolve(root, "OPENAI_SUBMISSION.md")), true);
   assert.equal(existsSync(resolve(root, "assets", "devrecap-logo.webp")), true);
+  assert.equal(existsSync(resolve(root, "assets", "devrecap-icon.png")), true);
+  assert.equal(existsSync(resolve(root, "assets", "devrecap-logo.png")), true);
 });
 
 test("marketplace runner boots the CLI on Node 24 without noisy workspace-link output", () => {
