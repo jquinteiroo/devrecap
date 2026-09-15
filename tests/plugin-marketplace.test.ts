@@ -107,6 +107,21 @@ test("public support and listing materials stay production-focused", () => {
   assert.equal(existsSync(resolve(root, ".kiro")), false);
 });
 
+test("public install docs lead with the repository marketplace and document curated-catalog fallback", () => {
+  const readme = readFileSync(resolve(root, "README.md"), "utf8");
+  const support = readFileSync(resolve(root, "SUPPORT.md"), "utf8");
+
+  for (const content of [readme, support]) {
+    assert.match(content, /codex plugin marketplace add jquinteiroo\/devrecap --ref main/);
+    assert.match(content, /codex plugin add devrecap@devrecap-marketplace/);
+  }
+
+  assert.match(readme, /Codex CLI — recommended/);
+  assert.match(readme, /codex plugin list --available --json/);
+  assert.match(readme, /plugin devrecap was not found in marketplace openai-curated/);
+  assert.match(support, /Only use `codex plugin add devrecap@openai-curated` when DevRecap is actually present/i);
+});
+
 test("marketplace runner boots the CLI on Node 24 without noisy workspace-link output", () => {
   const result = spawnSync(process.execPath, [resolve(root, "scripts/devrecap-plugin.mjs"), "--help"], {
     cwd: root,
