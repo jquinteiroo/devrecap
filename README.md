@@ -21,8 +21,8 @@
 </p>
 
 <p align="center">
-  <strong>Now available in the OpenAI Plugins Directory.</strong><br>
-  Install with <code>codex plugin add devrecap@openai-curated</code>, then run <code>$devrecap</code>.
+  <strong>Published in the OpenAI Plugins Directory.</strong><br>
+  For Codex CLI, install from the repository marketplace, then run <code>$devrecap</code>.
 </p>
 
 ---
@@ -41,14 +41,15 @@ It reads only the local coding history and Git evidence you explicitly authorize
 
 ## Install
 
-DevRecap 0.3.0 is publicly available through the OpenAI Plugins Directory.
+DevRecap 0.3.0 is published in the OpenAI Plugins Directory. Directory visibility and the Codex CLI curated catalog can differ by client version, account, or rollout state, so the repository marketplace is currently the reliable CLI installation path.
 
 ### Codex CLI — recommended
 
-Install the approved public release directly from the OpenAI curated marketplace:
+Add the DevRecap repository marketplace and install the plugin:
 
 ```bash
-codex plugin add devrecap@openai-curated
+codex plugin marketplace add jquinteiroo/devrecap --ref main
+codex plugin add devrecap@devrecap-marketplace
 ```
 
 Start or restart Codex, then invoke the Skill:
@@ -57,9 +58,16 @@ Start or restart Codex, then invoke the Skill:
 $devrecap
 ```
 
-### Codex UI
+If you already added the repository marketplace and want to refresh it first:
 
-You can also install it interactively:
+```bash
+codex plugin marketplace upgrade devrecap-marketplace
+codex plugin add devrecap@devrecap-marketplace
+```
+
+### Codex UI / Plugins Directory
+
+You can also install it interactively when DevRecap appears in your client catalog:
 
 ```text
 /plugins
@@ -71,16 +79,23 @@ Search for **DevRecap**, install it, start a new thread, then run:
 $devrecap
 ```
 
-### Directly from GitHub
+If DevRecap does not appear in `/plugins`, use the repository marketplace commands above.
 
-If you want the latest version from this repository instead of the curated marketplace snapshot:
+### OpenAI curated CLI catalog
+
+Some Codex clients may expose DevRecap directly through the built-in OpenAI curated marketplace. You can inspect the catalog with:
 
 ```bash
-codex plugin marketplace add jquinteiroo/devrecap --ref main
-codex plugin add devrecap@devrecap-marketplace
+codex plugin list --available --json
 ```
 
-For most users, `devrecap@openai-curated` is the recommended install because it uses the reviewed public release.
+If DevRecap is present there, this shorter install also works:
+
+```bash
+codex plugin add devrecap@openai-curated
+```
+
+If that command returns `plugin devrecap was not found in marketplace openai-curated`, the curated CLI catalog has not exposed DevRecap for that client/account yet. Use the repository marketplace path instead; the plugin package itself is the same public repository release.
 
 Then ask naturally:
 
@@ -283,7 +298,7 @@ there is evidence that this work was completed
 
 ## Local development
 
-The public directory is the easiest way to use DevRecap. Clone the repository only if you want to develop or inspect the project locally.
+The repository marketplace is the most reliable way to use DevRecap from Codex CLI today. Clone the repository only if you want to develop or inspect the project locally.
 
 ### Requirements
 
