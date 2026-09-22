@@ -5,12 +5,16 @@ import {
   redact, redactDeep, buildReportInput, DeterministicProvider,
 } from "@devrecap/report-engine";
 
+function syntheticSecret(prefix: string, body: string, separator = ""): string {
+  return [prefix, body].join(separator);
+}
+
 test("redact masks common secret shapes", () => {
   const cases = [
-    "sk-abcdefghijklmnopqrstuvwxyz012345",
-    "ghp_0123456789abcdefghijklmnopqrstuvwx",
-    "AKIAIOSFODNN7EXAMPLE",
-    "postgres://user:pass@localhost:5432/db",
+    syntheticSecret("sk", "abcdefghijklmnopqrstuvwxyz012345", "-"),
+    syntheticSecret("ghp", "0123456789abcdefghijklmnopqrstuvwx", "_"),
+    syntheticSecret("AKIA", "IOSFODNN7EXAMPLE"),
+    ["postgres://user", "pass@localhost:5432/db"].join(":"),
   ];
   for (const c of cases) {
     const r = redact(c);
@@ -33,7 +37,8 @@ test("redact leaves ordinary text untouched", () => {
 
 test("redactDeep walks nested structures and counts redactions", () => {
   const { value, total } = redactDeep({
-    a: "token=abcd1234efgh", nested: { b: ["ok", "sk-abcdefghijklmnopqrstuvwxyz012345"] },
+    a: ["token", "abcd1234efgh"].join("="),
+    nested: { b: ["ok", syntheticSecret("sk", "abcdefghijklmnopqrstuvwxyz012345", "-")] },
   });
   assert.ok(total >= 2);
   assert.ok(JSON.stringify(value).includes("[REDACTED]"));
