@@ -24,7 +24,7 @@ test("redact masks common secret shapes", () => {
 });
 
 test("redact masks assignment-style secrets but keeps the key name", () => {
-  const r = redact('password="hunter2secret"');
+  const r = redact(["password", "hunter2secret"].join('="') + '"');
   assert.ok(r.text.startsWith("password"));
   assert.ok(r.text.includes("[REDACTED]"));
 });
