@@ -50,6 +50,10 @@ async function get(base: string, path: string) {
 }
 
 const RANGE = { start: "2026-09-01T00:00:00Z", end: "2026-09-30T23:59:59Z" };
+
+function fakeOpenAiKey(suffix: string): string {
+  return ["sk", suffix].join("-");
+}
 const reportBody = (extra: Record<string, unknown> = {}) =>
   ({ kind: "help_me_remember", language: "en", ...RANGE, ...extra });
 
@@ -59,19 +63,19 @@ const reportBody = (extra: Record<string, unknown> = {}) =>
 test("GET /settings never returns the raw API key (masked + boolean only)", async () => {
   const srv = await startServer();
   try {
-    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: "sk-secret-abcd1234" });
+    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: fakeOpenAiKey("secret-abcd1234") });
     const { json } = await get(srv.base, "/api/settings");
     assert.equal(json.openaiApiKey, undefined, "raw key must NOT be present");
     assert.equal(json.openaiApiKeySet, true, "reports that a key is configured");
     assert.match(json.openaiApiKeyMasked, /1234$/, "masked hint shows only the last 4 chars");
-    assert.doesNotMatch(JSON.stringify(json), /sk-secret-abcd1234/, "the full key is never serialized to the client");
+    assert.doesNotMatch(JSON.stringify(json), new RegExp(fakeOpenAiKey("secret-abcd1234")), "the full key is never serialized to the client");
   } finally { await srv.stop(); }
 });
 
 test("saving settings without a key PRESERVES the existing stored key", async () => {
   const srv = await startServer();
   try {
-    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: "sk-keep-me-9999" });
+    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: fakeOpenAiKey("keep-me-9999") });
     // Update an unrelated field, sending NO key.
     await post(srv.base, "/api/settings", { defaultLength: "short" });
     const { json } = await get(srv.base, "/api/settings");
@@ -84,7 +88,7 @@ test("saving settings without a key PRESERVES the existing stored key", async ()
 test("clearOpenaiApiKey:true explicitly removes the stored key", async () => {
   const srv = await startServer();
   try {
-    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: "sk-remove-me" });
+    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: fakeOpenAiKey("remove-me") });
     await post(srv.base, "/api/settings", { clearOpenaiApiKey: true });
     const { json } = await get(srv.base, "/api/settings");
     assert.equal(json.openaiApiKeySet, false, "key was cleared");
@@ -111,7 +115,7 @@ test("external composer without consent is REFUSED (409) and makes no request", 
   const srv = await startServer();
   try {
     await post(srv.base, "/api/seed");
-    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: "sk-dummy-key" });
+    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: fakeOpenAiKey("dummy-key") });
 
     // Preview identifies the provider + the exact payload digest.
     const preview = await post(srv.base, "/api/reports/preview", reportBody());
@@ -132,7 +136,7 @@ test("external composer with a MISMATCHED consent digest is refused (409)", asyn
   const srv = await startServer();
   try {
     await post(srv.base, "/api/seed");
-    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: "sk-dummy-key" });
+    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: fakeOpenAiKey("dummy-key") });
     const bad = await post(srv.base, "/api/reports", reportBody({ consent: { confirmed: true, contextDigest: "not-the-real-digest" } }));
     assert.equal(bad.status, 409, "a stale/forged digest cannot authorize sending");
     assert.equal(bad.json.code, "consent_required");
@@ -143,7 +147,7 @@ test("external composer WITH matching consent proceeds (gate opens; safe fallbac
   const srv = await startServer();
   try {
     await post(srv.base, "/api/seed");
-    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: "sk-dummy-key" });
+    await post(srv.base, "/api/settings", { aiProvider: "openai", openaiApiKey: fakeOpenAiKey("dummy-key") });
     const preview = await post(srv.base, "/api/reports/preview", reportBody());
     const digest = preview.json.contextDigest;
     const ok = await post(srv.base, "/api/reports", reportBody({ consent: { confirmed: true, contextDigest: digest } }));
