@@ -30,10 +30,14 @@ test("portable plugin manifest exposes DevRecap as an AI-native productivity plu
 
 test("release manifests stay on the same product version", () => {
   const manifest = json("plugin.json");
+  const codexManifest = json(".codex-plugin/plugin.json");
   const rootPackage = json("package.json");
   const cliPackage = json("apps/cli/package.json");
 
   assert.equal(manifest.version, "0.3.0");
+  assert.equal(codexManifest.version, manifest.version);
+  assert.equal(codexManifest.name, manifest.name);
+  assert.equal(codexManifest.skills, "./skills/");
   assert.equal(rootPackage.version, manifest.version);
   assert.equal(cliPackage.version, manifest.version);
 });
@@ -98,6 +102,9 @@ test("public support and listing materials stay production-focused", () => {
   assert.equal(existsSync(resolve(root, "PRIVACY.md")), true);
   assert.equal(existsSync(resolve(root, "TERMS.md")), true);
   assert.equal(existsSync(resolve(root, "SUPPORT.md")), true);
+  assert.equal(existsSync(resolve(root, "SECURITY.md")), true);
+  assert.equal(existsSync(resolve(root, "package-lock.json")), true);
+  assert.equal(existsSync(resolve(root, ".codex-plugin", "plugin.json")), true);
   assert.equal(existsSync(resolve(root, "assets", "devrecap-logo.webp")), true);
   assert.equal(existsSync(resolve(root, "assets", "devrecap-icon.webp")), true);
   assert.equal(existsSync(resolve(root, "assets", "devrecap-logo-symbol.webp")), true);
