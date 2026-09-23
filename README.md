@@ -1,3 +1,5 @@
+[![HOL Guard](https://img.shields.io/endpoint?url=https%3A%2F%2Fhol.org%2Fapi%2Fregistry%2Fbadges%2Fplugin%3Fslug%3Djquinteiroo%252Fdevrecap%26metric%3Dtrust)](https://hol.org/registry/plugins/jquinteiroo%2Fdevrecap)
+
 <p align="center">
   <img src="assets/devrecap-logo.webp" width="220" alt="DevRecap logo">
 </p>
